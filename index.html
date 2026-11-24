@@ -1,0 +1,2314 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Misi Penyelamat Ekosistem - Game IPAS Kelas IV SD</title>
+  <style>
+    /* ==========================================================================
+       VARIABEL TEMA & PALET WARNA ALAM (HIJAU SAGE, CREAM, KUNING, COKELAT, ORANGE)
+       ========================================================================== */
+    :root {
+      --sage-dark: #4f7048;
+      --sage-main: #739568;
+      --sage-soft: #a3b899;
+      --sage-pale: #e6efe2;
+
+      --cream-bg: #fdfbf2;
+      --cream-card: #fffdf7;
+      --cream-warm: #f5eedc;
+
+      --yellow-soft: #fde68a;
+      --yellow-bright: #facc15;
+      --yellow-deep: #d97706;
+
+      --wood-dark: #5c3a21;
+      --wood-main: #8d5b4c;
+      --wood-light: #d4a373;
+
+      --orange-main: #f97316;
+      --orange-hover: #ea580c;
+      --orange-shadow: #c2410c;
+
+      --green-ok: #16a34a;
+      --green-bg: #dcfce7;
+      --red-warn: #dc2626;
+      --red-bg: #fee2e2;
+
+      --text-main: #2f2a24;
+      --text-muted: #5f564b;
+
+      --radius-xl: 28px;
+      --radius-lg: 20px;
+      --radius-md: 14px;
+      --shadow-card: 0 10px 25px rgba(92, 58, 33, 0.12);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: "Trebuchet MS", "Segoe UI", "Comic Sans MS", system-ui, -apple-system, sans-serif;
+      background: linear-gradient(180deg, #dff3e3 0%, var(--cream-bg) 45%, var(--cream-warm) 100%);
+      color: var(--text-main);
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+      line-height: 1.5;
+    }
+
+    /* ==========================================================================
+       DEKORASI LATAR BELAKANG ALAM (AWAN, MATAHARI, BUKIT SAWAH)
+       ========================================================================== */
+    .nature-bg {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+
+    .sun-decor {
+      position: absolute;
+      top: 18px;
+      right: 24px;
+      width: 84px;
+      height: 84px;
+      animation: spinSlow 28s linear infinite;
+    }
+
+    .cloud {
+      position: absolute;
+      opacity: 0.85;
+      animation: floatCloud 36s linear infinite;
+    }
+    .cloud-1 { top: 45px; left: -120px; width: 130px; animation-duration: 42s; }
+    .cloud-2 { top: 110px; left: -160px; width: 95px; animation-duration: 54s; animation-delay: -18s; }
+    .cloud-3 { top: 28px; left: -140px; width: 110px; animation-duration: 48s; animation-delay: -30s; }
+
+    .hills-bottom {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 145px;
+    }
+
+    @keyframes floatCloud {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(calc(100vw + 280px)); }
+    }
+
+    @keyframes spinSlow {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    @keyframes floatGentle {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-7px); }
+    }
+
+    @keyframes wiggle {
+      0%, 100% { transform: rotate(0deg); }
+      25% { transform: rotate(-4deg); }
+      75% { transform: rotate(4deg); }
+    }
+
+    @keyframes popIn {
+      0% { opacity: 0; transform: scale(0.88) translateY(10px); }
+      100% { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    @keyframes scoreJump {
+      0% { transform: scale(1); }
+      40% { transform: scale(1.35); color: var(--orange-main); }
+      100% { transform: scale(1); }
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20% { transform: translateX(-7px); }
+      40% { transform: translateX(7px); }
+      60% { transform: translateX(-5px); }
+      80% { transform: translateX(5px); }
+    }
+
+    /* ==========================================================================
+       KONTAINER UTAMA & TOMBOL 3D TAKTIL
+       ========================================================================== */
+    .app-wrapper {
+      position: relative;
+      z-index: 1;
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 16px 16px 48px;
+    }
+
+    .screen {
+      display: none;
+      animation: popIn 0.4s ease-out;
+    }
+    .screen.active {
+      display: block;
+    }
+
+    .card-board {
+      background: var(--cream-card);
+      border: 4px solid var(--wood-light);
+      border-radius: var(--radius-xl);
+      padding: 24px;
+      box-shadow: var(--shadow-card), 0 6px 0 var(--wood-light);
+    }
+
+    .btn-3d {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-family: inherit;
+      font-size: 1.08rem;
+      font-weight: 800;
+      padding: 14px 26px;
+      border: none;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.15s ease;
+      user-select: none;
+    }
+
+    .btn-3d:active:not(:disabled) {
+      transform: translateY(4px);
+    }
+
+    .btn-3d:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .btn-orange {
+      background: linear-gradient(180deg, #fb923c 0%, var(--orange-main) 100%);
+      color: #fff;
+      box-shadow: 0 5px 0 var(--orange-shadow);
+    }
+    .btn-orange:hover:not(:disabled) {
+      background: linear-gradient(180deg, #fdba74 0%, var(--orange-hover) 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 7px 0 var(--orange-shadow);
+    }
+
+    .btn-sage {
+      background: linear-gradient(180deg, #88a47c 0%, var(--sage-main) 100%);
+      color: #fff;
+      box-shadow: 0 5px 0 var(--sage-dark);
+    }
+    .btn-sage:hover:not(:disabled) {
+      background: linear-gradient(180deg, #98b48c 0%, #638558 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 7px 0 var(--sage-dark);
+    }
+
+    .btn-cream {
+      background: var(--cream-warm);
+      color: var(--wood-dark);
+      border: 2px solid var(--wood-light);
+      box-shadow: 0 4px 0 var(--wood-light);
+    }
+    .btn-cream:hover:not(:disabled) {
+      background: #efe3c8;
+      transform: translateY(-2px);
+    }
+
+    /* ==========================================================================
+       HEADER HUD (TAMPIL SELAMA MISI 1 - 3)
+       ========================================================================== */
+    .hud-bar {
+      display: none;
+      background: var(--cream-card);
+      border: 3px solid var(--sage-main);
+      border-radius: var(--radius-lg);
+      padding: 12px 18px;
+      margin-bottom: 18px;
+      box-shadow: 0 5px 0 var(--sage-soft);
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .hud-bar.visible {
+      display: flex;
+    }
+
+    .player-badge {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--sage-pale);
+      padding: 6px 14px;
+      border-radius: 999px;
+      border: 2px solid var(--sage-soft);
+    }
+    .player-avatar {
+      font-size: 1.5rem;
+      animation: floatGentle 3s ease-in-out infinite;
+    }
+    .player-name-text {
+      font-weight: 800;
+      color: var(--sage-dark);
+      font-size: 1rem;
+    }
+
+    .mission-progress-wrap {
+      flex: 1;
+      min-width: 210px;
+      max-width: 380px;
+    }
+    .mission-steps {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+      gap: 6px;
+    }
+    .step-pill {
+      flex: 1;
+      text-align: center;
+      font-size: 0.82rem;
+      font-weight: 800;
+      padding: 4px 8px;
+      border-radius: 999px;
+      border: 2px solid var(--wood-light);
+      background: var(--cream-warm);
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .step-pill.active {
+      background: var(--yellow-soft);
+      border-color: var(--yellow-deep);
+      color: var(--wood-dark);
+      transform: scale(1.04);
+    }
+    .step-pill.done {
+      background: var(--green-bg);
+      border-color: var(--green-ok);
+      color: var(--green-ok);
+    }
+    .step-pill.locked {
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
+
+    .progress-track {
+      height: 12px;
+      background: var(--cream-warm);
+      border-radius: 999px;
+      border: 2px solid var(--sage-soft);
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--sage-main), var(--yellow-bright), var(--orange-main));
+      border-radius: 999px;
+      transition: width 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .hud-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .score-box {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--yellow-soft);
+      border: 2px solid var(--yellow-deep);
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-weight: 900;
+      color: var(--wood-dark);
+      font-size: 1.05rem;
+      position: relative;
+    }
+    .score-jump {
+      animation: scoreJump 0.5s ease;
+    }
+    .floating-plus {
+      position: absolute;
+      top: -18px;
+      right: 8px;
+      font-weight: 900;
+      color: var(--green-ok);
+      font-size: 1.1rem;
+      pointer-events: none;
+      animation: floatUpFade 1.1s ease-out forwards;
+    }
+    @keyframes floatUpFade {
+      0% { opacity: 1; transform: translateY(0) scale(0.9); }
+      100% { opacity: 0; transform: translateY(-28px) scale(1.2); }
+    }
+
+    .sound-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 2px solid var(--wood-light);
+      background: var(--cream-warm);
+      font-size: 1.15rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* ==========================================================================
+       HALAMAN PEMBUKA (LANDING PAGE)
+       ========================================================================== */
+    .landing-card {
+      text-align: center;
+      padding: 28px 22px 32px;
+      background: linear-gradient(180deg, #fffef9 0%, var(--cream-warm) 100%);
+    }
+
+    .badge-tag {
+      display: inline-block;
+      background: var(--sage-pale);
+      color: var(--sage-dark);
+      border: 2px solid var(--sage-main);
+      padding: 5px 16px;
+      border-radius: 999px;
+      font-weight: 800;
+      font-size: 0.9rem;
+      margin-bottom: 10px;
+    }
+
+    .game-title {
+      font-size: clamp(1.85rem, 4.5vw, 2.75rem);
+      color: var(--wood-dark);
+      text-shadow: 2px 3px 0 var(--yellow-soft);
+      line-height: 1.2;
+      margin-bottom: 8px;
+    }
+
+    .game-subtitle {
+      font-size: clamp(1.05rem, 2.5vw, 1.3rem);
+      color: var(--sage-dark);
+      font-weight: 700;
+      margin-bottom: 18px;
+    }
+
+    .hero-illustration {
+      max-width: 540px;
+      margin: 0 auto 18px;
+      background: linear-gradient(180deg, #e0f2fe 0%, #dcfce7 75%, #fde68a 100%);
+      border: 3px solid var(--sage-soft);
+      border-radius: var(--radius-lg);
+      padding: 12px 12px 0;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .explorer-character {
+      animation: floatGentle 3.2s ease-in-out infinite;
+      transform-origin: center bottom;
+      cursor: pointer;
+    }
+    .explorer-character:hover {
+      animation: wiggle 0.6s ease-in-out infinite;
+    }
+
+    .mission-intro-box {
+      background: var(--cream-card);
+      border: 2px dashed var(--sage-main);
+      border-radius: var(--radius-md);
+      padding: 14px 18px;
+      max-width: 620px;
+      margin: 0 auto 20px;
+      font-size: 1.02rem;
+      color: var(--text-main);
+    }
+
+    .mission-preview-pills {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .m-pill {
+      background: var(--yellow-soft);
+      color: var(--wood-dark);
+      padding: 5px 12px;
+      border-radius: 999px;
+      font-size: 0.88rem;
+      font-weight: 800;
+    }
+
+    .name-input-group {
+      max-width: 400px;
+      margin: 0 auto 18px;
+    }
+    .name-label {
+      display: block;
+      font-weight: 800;
+      color: var(--wood-dark);
+      margin-bottom: 8px;
+      font-size: 1.05rem;
+    }
+    .name-input {
+      width: 100%;
+      padding: 14px 18px;
+      font-family: inherit;
+      font-size: 1.1rem;
+      font-weight: 700;
+      text-align: center;
+      border: 3px solid var(--sage-main);
+      border-radius: 999px;
+      background: #fff;
+      color: var(--text-main);
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .name-input:focus {
+      border-color: var(--orange-main);
+      box-shadow: 0 0 0 4px rgba(249, 115, 22, 0.2);
+    }
+    .name-error {
+      color: var(--red-warn);
+      font-weight: 700;
+      font-size: 0.92rem;
+      margin-top: 6px;
+      min-height: 22px;
+    }
+
+    /* ==========================================================================
+       HEADER TIAP MISI
+       ========================================================================== */
+    .mission-header {
+      text-align: center;
+      margin-bottom: 18px;
+    }
+    .mission-chip {
+      display: inline-block;
+      background: var(--orange-main);
+      color: #fff;
+      font-weight: 800;
+      font-size: 0.88rem;
+      padding: 4px 14px;
+      border-radius: 999px;
+      margin-bottom: 6px;
+    }
+    .mission-title {
+      font-size: clamp(1.4rem, 3.2vw, 1.9rem);
+      color: var(--wood-dark);
+      margin-bottom: 6px;
+    }
+    .mission-desc {
+      color: var(--text-muted);
+      font-size: 1.02rem;
+      max-width: 680px;
+      margin: 0 auto;
+    }
+
+    /* ==========================================================================
+       MISI 1 — SUSUN RANTAI MAKANAN (DRAG & DROP + TAP-TO-SELECT)
+       ========================================================================== */
+    .chain-instruction-tip {
+      background: var(--sage-pale);
+      border-left: 5px solid var(--sage-main);
+      padding: 10px 14px;
+      border-radius: 12px;
+      font-size: 0.95rem;
+      color: var(--sage-dark);
+      font-weight: 700;
+      margin-bottom: 18px;
+      text-align: center;
+    }
+
+    .chain-slots-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      background: linear-gradient(180deg, #eef6ea 0%, #f9f4e6 100%);
+      border: 3px dashed var(--sage-main);
+      border-radius: var(--radius-lg);
+      padding: 18px 12px;
+      margin-bottom: 20px;
+    }
+
+    .chain-slot-wrap {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .chain-arrow {
+      font-size: 1.5rem;
+      font-weight: 900;
+      color: var(--orange-main);
+      user-select: none;
+    }
+
+    .drop-slot {
+      width: 122px;
+      min-height: 138px;
+      background: rgba(255, 255, 255, 0.82);
+      border: 3px dashed var(--wood-light);
+      border-radius: var(--radius-md);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 8px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      position: relative;
+    }
+
+    .drop-slot.drag-over {
+      background: var(--yellow-soft);
+      border-color: var(--orange-main);
+      transform: scale(1.05);
+    }
+
+    .drop-slot.filled {
+      border-style: solid;
+      border-color: var(--sage-main);
+      background: #fff;
+      box-shadow: 0 4px 0 var(--sage-soft);
+    }
+
+    .drop-slot.slot-wrong {
+      border-color: var(--red-warn);
+      background: var(--red-bg);
+      animation: shake 0.4s ease;
+    }
+
+    .drop-slot.slot-correct {
+      border-color: var(--green-ok);
+      background: var(--green-bg);
+    }
+
+    .slot-number {
+      font-size: 0.78rem;
+      font-weight: 800;
+      color: var(--wood-main);
+      background: var(--cream-warm);
+      padding: 2px 8px;
+      border-radius: 999px;
+      margin-bottom: 4px;
+    }
+
+    .slot-placeholder {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      font-weight: 700;
+    }
+
+    .organism-pool {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      min-height: 132px;
+      padding: 14px;
+      background: var(--cream-warm);
+      border-radius: var(--radius-lg);
+      border: 2px solid var(--wood-light);
+      margin-bottom: 18px;
+    }
+
+    .org-card {
+      width: 118px;
+      background: #fff;
+      border: 3px solid var(--wood-main);
+      border-radius: var(--radius-md);
+      padding: 10px 8px;
+      text-align: center;
+      cursor: grab;
+      box-shadow: 0 5px 0 var(--wood-main);
+      transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+      user-select: none;
+    }
+
+    .org-card:hover {
+      transform: translateY(-4px);
+    }
+
+    .org-card.selected {
+      border-color: var(--orange-main);
+      background: var(--yellow-soft);
+      box-shadow: 0 6px 0 var(--orange-shadow);
+      transform: translateY(-5px) scale(1.04);
+    }
+
+    .org-card.in-slot {
+      width: 100%;
+      border: none;
+      box-shadow: none;
+      padding: 4px;
+      background: transparent;
+    }
+
+    .org-emoji {
+      font-size: 2.5rem;
+      line-height: 1.15;
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .org-name {
+      font-weight: 900;
+      font-size: 0.98rem;
+      color: var(--wood-dark);
+    }
+
+    .org-hint-role {
+      font-size: 0.72rem;
+      color: var(--sage-dark);
+      font-weight: 700;
+      margin-top: 2px;
+    }
+
+    .action-row {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 10px;
+    }
+
+    /* ==========================================================================
+       KOTAK FEEDBACK EDUKATIF
+       ========================================================================== */
+    .feedback-box {
+      display: none;
+      margin-top: 18px;
+      padding: 16px 20px;
+      border-radius: var(--radius-md);
+      border: 3px solid;
+      animation: popIn 0.3s ease;
+    }
+    .feedback-box.visible {
+      display: block;
+    }
+    .feedback-box.success {
+      background: var(--green-bg);
+      border-color: var(--green-ok);
+      color: #14532d;
+    }
+    .feedback-box.warning {
+      background: #fef3c7;
+      border-color: var(--yellow-deep);
+      color: #78350f;
+    }
+    .feedback-title {
+      font-size: 1.15rem;
+      font-weight: 900;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .feedback-text {
+      font-size: 0.98rem;
+      line-height: 1.55;
+    }
+
+    .role-summary-list {
+      margin-top: 10px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 8px;
+    }
+    .role-item {
+      background: rgba(255, 255, 255, 0.85);
+      padding: 8px 10px;
+      border-radius: 10px;
+      font-size: 0.86rem;
+      border: 1px solid #86efac;
+    }
+
+    /* ==========================================================================
+       MISI 2 — KUIS PILIHAN GANDA & MISI 3 — STUDI KASUS EKOSISTEM
+       ========================================================================== */
+    .quiz-top-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--cream-warm);
+      padding: 10px 16px;
+      border-radius: 999px;
+      border: 2px solid var(--wood-light);
+      margin-bottom: 18px;
+      font-weight: 800;
+      color: var(--wood-dark);
+      font-size: 0.95rem;
+    }
+
+    .question-box {
+      background: linear-gradient(180deg, #f3f9f0 0%, #fff 100%);
+      border: 3px solid var(--sage-soft);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      margin-bottom: 18px;
+    }
+
+    .case-illustration {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: var(--yellow-soft);
+      border: 2px solid var(--yellow-deep);
+      border-radius: var(--radius-md);
+      padding: 12px 16px;
+      margin-bottom: 14px;
+    }
+    .case-emoji-badge {
+      font-size: 2.5rem;
+      background: #fff;
+      width: 64px;
+      height: 64px;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      border: 2px solid var(--wood-light);
+    }
+
+    .question-text {
+      font-size: 1.18rem;
+      font-weight: 800;
+      color: var(--text-main);
+      line-height: 1.45;
+    }
+
+    .options-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+
+    .option-btn {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+      text-align: left;
+      font-family: inherit;
+      font-size: 1.03rem;
+      font-weight: 700;
+      padding: 14px 18px;
+      background: #fff;
+      color: var(--text-main);
+      border: 3px solid var(--wood-light);
+      border-radius: var(--radius-md);
+      box-shadow: 0 4px 0 var(--wood-light);
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .option-btn:hover:not(:disabled) {
+      background: var(--cream-warm);
+      border-color: var(--sage-main);
+      transform: translateY(-2px);
+    }
+
+    .option-btn:disabled {
+      cursor: default;
+    }
+
+    .option-letter {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: var(--sage-pale);
+      color: var(--sage-dark);
+      font-weight: 900;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      border: 2px solid var(--sage-main);
+    }
+
+    .option-btn.opt-correct {
+      background: var(--green-bg);
+      border-color: var(--green-ok);
+      box-shadow: 0 4px 0 var(--green-ok);
+      color: #14532d;
+    }
+    .option-btn.opt-correct .option-letter {
+      background: var(--green-ok);
+      color: #fff;
+      border-color: var(--green-ok);
+    }
+
+    .option-btn.opt-wrong {
+      background: var(--red-bg);
+      border-color: var(--red-warn);
+      box-shadow: 0 4px 0 var(--red-warn);
+      color: #7f1d1d;
+      animation: shake 0.35s ease;
+    }
+    .option-btn.opt-wrong .option-letter {
+      background: var(--red-warn);
+      color: #fff;
+      border-color: var(--red-warn);
+    }
+
+    .mission-summary-card {
+      text-align: center;
+      background: linear-gradient(180deg, var(--sage-pale) 0%, #fff 100%);
+      border: 3px solid var(--sage-main);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      margin-top: 10px;
+    }
+
+    /* ==========================================================================
+       HALAMAN HASIL AKHIR & MODAL RINCIAN
+       ========================================================================== */
+    .final-card {
+      text-align: center;
+      background: linear-gradient(180deg, #fffbeb 0%, var(--cream-card) 55%, var(--sage-pale) 100%);
+    }
+
+    .badge-showcase {
+      width: 170px;
+      height: 170px;
+      margin: 8px auto 14px;
+      animation: floatGentle 3s ease-in-out infinite;
+    }
+
+    .final-stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 12px;
+      max-width: 560px;
+      margin: 18px auto;
+    }
+
+    .stat-pill {
+      background: #fff;
+      border: 3px solid var(--wood-light);
+      border-radius: var(--radius-md);
+      padding: 14px 12px;
+      box-shadow: 0 4px 0 var(--wood-light);
+    }
+    .stat-value {
+      font-size: 1.75rem;
+      font-weight: 900;
+      color: var(--orange-main);
+    }
+    .stat-label {
+      font-size: 0.9rem;
+      font-weight: 800;
+      color: var(--wood-dark);
+    }
+
+    .motivation-banner {
+      background: var(--yellow-soft);
+      border: 2px solid var(--yellow-deep);
+      border-radius: var(--radius-md);
+      padding: 14px 18px;
+      max-width: 600px;
+      margin: 0 auto 22px;
+      font-weight: 800;
+      color: var(--wood-dark);
+      font-size: 1.04rem;
+    }
+
+    /* Modal Rincian Hasil */
+    .modal-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(47, 42, 36, 0.6);
+      z-index: 50;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    .modal-backdrop.open {
+      display: flex;
+    }
+    .modal-box {
+      background: var(--cream-card);
+      border: 4px solid var(--wood-main);
+      border-radius: var(--radius-xl);
+      max-width: 540px;
+      width: 100%;
+      padding: 24px;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
+      animation: popIn 0.25s ease;
+      max-height: 88vh;
+      overflow-y: auto;
+    }
+    .recap-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--cream-warm);
+      border: 2px solid var(--wood-light);
+      border-radius: 14px;
+      padding: 12px 14px;
+      margin-bottom: 10px;
+    }
+
+    /* Canvas Confetti */
+    #confetti-canvas {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 40;
+    }
+
+    /* ==========================================================================
+       RESPONSIF MOBILE
+       ========================================================================== */
+    @media (max-width: 640px) {
+      .card-board {
+        padding: 18px 14px;
+      }
+      .drop-slot {
+        width: 96px;
+        min-height: 122px;
+        padding: 6px;
+      }
+      .org-card {
+        width: 98px;
+        padding: 8px 6px;
+      }
+      .org-emoji {
+        font-size: 2.1rem;
+      }
+      .chain-arrow {
+        font-size: 1.2rem;
+      }
+      .hud-bar {
+        padding: 10px 12px;
+      }
+      .mission-progress-wrap {
+        order: 3;
+        max-width: 100%;
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Kanvas Confetti untuk Perayaan -->
+  <canvas id="confetti-canvas"></canvas>
+
+  <!-- Dekorasi Alam Latar Belakang -->
+  <div class="nature-bg" aria-hidden="true">
+    <!-- Matahari Tersenyum -->
+    <svg class="sun-decor" viewBox="0 0 100 100">
+      <g fill="#FACC15">
+        <circle cx="50" cy="50" r="26" />
+        <polygon points="50,6 55,18 45,18" />
+        <polygon points="50,94 55,82 45,82" />
+        <polygon points="6,50 18,45 18,55" />
+        <polygon points="94,50 82,45 82,55" />
+        <polygon points="19,19 30,24 24,30" />
+        <polygon points="81,81 70,76 76,70" />
+        <polygon points="81,19 76,30 70,24" />
+        <polygon points="19,81 24,70 30,76" />
+      </g>
+      <circle cx="42" cy="46" r="2.8" fill="#5C3A21" />
+      <circle cx="58" cy="46" r="2.8" fill="#5C3A21" />
+      <path d="M41 55 Q50 63 59 55" stroke="#5C3A21" stroke-width="3" fill="none" stroke-linecap="round" />
+    </svg>
+
+    <!-- Awan Melayang -->
+    <svg class="cloud cloud-1" viewBox="0 0 160 80">
+      <path d="M35 62 H125 A22 22 0 0 0 122 18 A30 30 0 0 0 66 15 A24 24 0 0 0 35 62 Z" fill="#FFFFFF" />
+    </svg>
+    <svg class="cloud cloud-2" viewBox="0 0 160 80">
+      <path d="M35 62 H125 A22 22 0 0 0 122 18 A30 30 0 0 0 66 15 A24 24 0 0 0 35 62 Z" fill="#FFFFFF" />
+    </svg>
+    <svg class="cloud cloud-3" viewBox="0 0 160 80">
+      <path d="M35 62 H125 A22 22 0 0 0 122 18 A30 30 0 0 0 66 15 A24 24 0 0 0 35 62 Z" fill="#FFFFFF" />
+    </svg>
+
+    <!-- Bukit Sawah Berlapis di Bawah -->
+    <svg class="hills-bottom" viewBox="0 0 1440 180" preserveAspectRatio="none">
+      <path d="M0,95 Q360,20 720,90 T1440,70 L1440,180 L0,180 Z" fill="#A3B899" opacity="0.55" />
+      <path d="M0,120 Q420,165 880,105 T1440,125 L1440,180 L0,180 Z" fill="#739568" opacity="0.65" />
+    </svg>
+  </div>
+
+  <div class="app-wrapper">
+    <!-- ======================================================================
+         HEADER HUD PERMAINAN
+         ====================================================================== -->
+    <header id="game-hud" class="hud-bar" aria-label="Status Permainan">
+      <div class="player-badge">
+        <span class="player-avatar">🧭</span>
+        <div>
+          <div style="font-size: 0.72rem; color: var(--text-muted); font-weight: 700;">Penjelajah Cilik</div>
+          <div id="hud-player-name" class="player-name-text">Penjelajah</div>
+        </div>
+      </div>
+
+      <div class="mission-progress-wrap">
+        <div class="mission-steps">
+          <button type="button" id="nav-m1" class="step-pill active" onclick="navigateMission(1)">Misi 1 ⭐</button>
+          <button type="button" id="nav-m2" class="step-pill locked" onclick="navigateMission(2)">Misi 2 🔒</button>
+          <button type="button" id="nav-m3" class="step-pill locked" onclick="navigateMission(3)">Misi 3 🔒</button>
+        </div>
+        <div class="progress-track">
+          <div id="hud-progress-fill" class="progress-fill"></div>
+        </div>
+      </div>
+
+      <div class="hud-right">
+        <div id="hud-score-box" class="score-box">
+          <span>🏆</span>
+          <span id="hud-score">0</span>
+          <span style="font-size: 0.8rem;">Poin</span>
+        </div>
+        <button type="button" id="sound-toggle-btn" class="sound-btn" title="Suara Efek" onclick="toggleSound()">🔊</button>
+      </div>
+    </header>
+
+    <!-- ======================================================================
+         LAYAR 0: HALAMAN PEMBUKA (LANDING PAGE)
+         ====================================================================== -->
+    <section id="screen-landing" class="screen active">
+      <div class="card-board landing-card">
+        <span class="badge-tag">🌿 IPAS Kelas IV SD • Bab Ekosistem</span>
+        <h1 class="game-title">Misi Penyelamat Ekosistem</h1>
+        <p class="game-subtitle">Petualangan seru mengenal rantai makanan!</p>
+
+        <!-- Ilustrasi Ekosistem & Penjelajah Cilik SVG -->
+        <div class="hero-illustration">
+          <svg viewBox="0 0 520 190" width="100%" height="auto" role="img" aria-label="Ilustrasi ekosistem sawah, hutan, hewan, dan penjelajah cilik">
+            <!-- Bukit Hijau -->
+            <ellipse cx="110" cy="175" rx="160" ry="55" fill="#88A47C" />
+            <ellipse cx="410" cy="178" rx="170" ry="52" fill="#6B8E63" />
+            <rect x="0" y="155" width="520" height="40" fill="#A3B899" />
+
+            <!-- Pohon Rimba Kiri -->
+            <rect x="52" y="102" width="16" height="56" rx="6" fill="#8D5B4C" />
+            <circle cx="60" cy="88" r="30" fill="#4F7048" />
+            <circle cx="42" cy="98" r="22" fill="#6B8E63" />
+            <circle cx="78" cy="98" r="22" fill="#739568" />
+
+            <!-- Pohon Kanan -->
+            <rect x="448" y="108" width="14" height="50" rx="5" fill="#8D5B4C" />
+            <circle cx="455" cy="94" r="26" fill="#4F7048" />
+            <circle cx="438" cy="103" r="19" fill="#739568" />
+
+            <!-- Elang Terbang -->
+            <g transform="translate(350, 32)">
+              <path d="M0,16 Q18,0 32,14 Q46,0 64,16 Q46,12 32,20 Q18,12 0,16 Z" fill="#5C3A21" />
+              <circle cx="32" cy="16" r="5" fill="#FDE68A" />
+            </g>
+
+            <!-- Karakter Penjelajah Cilik dengan Topi Rimba & Teropong -->
+            <g class="explorer-character" transform="translate(215, 42)">
+              <!-- Badan Baju Petualang -->
+              <rect x="22" y="72" width="46" height="46" rx="14" fill="#F97316" stroke="#5C3A21" stroke-width="3" />
+              <rect x="38" y="72" width="14" height="46" fill="#FDE68A" />
+              <!-- Kepala -->
+              <circle cx="45" cy="48" r="24" fill="#FCD5B5" stroke="#5C3A21" stroke-width="3" />
+              <!-- Mata & Senyum -->
+              <circle cx="37" cy="46" r="3" fill="#2F2A24" />
+              <circle cx="53" cy="46" r="3" fill="#2F2A24" />
+              <path d="M38 56 Q45 63 52 56" stroke="#5C3A21" stroke-width="2.8" fill="none" stroke-linecap="round" />
+              <!-- Topi Rimba -->
+              <ellipse cx="45" cy="28" rx="34" ry="8" fill="#8D5B4C" stroke="#5C3A21" stroke-width="2.5" />
+              <path d="M23,28 Q25,10 45,10 Q65,10 67,28 Z" fill="#A3B899" stroke="#5C3A21" stroke-width="2.5" />
+              <!-- Teropong di Tangan -->
+              <rect x="58" y="64" width="22" height="12" rx="5" fill="#4F7048" stroke="#5C3A21" stroke-width="2.5" />
+              <circle cx="80" cy="70" r="6" fill="#38BDF8" stroke="#5C3A21" stroke-width="2" />
+            </g>
+
+            <!-- Rumpun Padi, Bunga & Hewan Kecil -->
+            <text x="112" y="162" font-size="28">🌾</text>
+            <text x="148" y="164" font-size="24">🦗</text>
+            <text x="312" y="163" font-size="26">🐸</text>
+            <text x="372" y="164" font-size="24">🌼</text>
+            <text x="22" y="165" font-size="22">🍄</text>
+          </svg>
+        </div>
+
+        <div class="mission-intro-box">
+          Halo, Penjelajah Cilik! Alam membutuhkan bantuanmu untuk menjaga keseimbangan makhluk hidup. Selesaikan <strong>3 Misi Seru</strong> berikut untuk meraih <strong>Badge Penjelajah Ekosistem</strong>:
+          <div class="mission-preview-pills">
+            <span class="m-pill">1️⃣ Susun Rantai Makanan</span>
+            <span class="m-pill">2️⃣ Siapa Memakan Siapa?</span>
+            <span class="m-pill">3️⃣ Selamatkan Ekosistem</span>
+          </div>
+        </div>
+
+        <div class="name-input-group">
+          <label for="player-name-input" class="name-label">✍️ Tuliskan Namamu Sebelum Berpetualang:</label>
+          <input
+            type="text"
+            id="player-name-input"
+            class="name-input"
+            placeholder="Contoh: Bima / Siti"
+            maxlength="22"
+            autocomplete="off"
+          />
+          <div id="name-error-msg" class="name-error"></div>
+        </div>
+
+        <button type="button" class="btn-3d btn-orange" style="font-size: 1.2rem; padding: 16px 36px;" onclick="startAdventure()">
+          🚀 Mulai Petualangan
+        </button>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         LAYAR 1: MISI 1 — SUSUN RANTAI MAKANAN
+         ====================================================================== -->
+    <section id="screen-m1" class="screen">
+      <div class="card-board">
+        <div class="mission-header">
+          <span class="mission-chip">MISI 1 DARI 3</span>
+          <h2 class="mission-title">🌾 Susun Rantai Makanan Sawah</h2>
+          <p class="mission-desc">
+            Susunlah urutan rantai makanan di ekosistem sawah mulai dari <strong>Produsen</strong> hingga <strong>Konsumen Puncak</strong>!
+          </p>
+        </div>
+
+        <div class="chain-instruction-tip">
+          💡 <strong>Cara Bermain:</strong> Seret (<em>drag</em>) kartu makhluk hidup ke kotak urutan, ATAU cukup <strong>ketuk (tap) kartu</strong> lalu ketuk kotak yang diinginkan! Ketuk kartu di dalam kotak untuk mengembalikannya.
+        </div>
+
+        <!-- 5 Slot Urutan Rantai Makanan -->
+        <div id="m1-slots" class="chain-slots-container" aria-label="Slot Urutan Rantai Makanan"></div>
+
+        <!-- Kartu Makhluk Hidup Acak -->
+        <div id="m1-pool" class="organism-pool" aria-label="Pilihan Makhluk Hidup"></div>
+
+        <div class="action-row">
+          <button type="button" id="m1-shuffle-btn" class="btn-3d btn-cream" onclick="resetM1Board(true)">
+            🔀 Acak Ulang
+          </button>
+          <button type="button" id="m1-check-btn" class="btn-3d btn-sage" disabled onclick="checkMission1()">
+            ✅ Periksa Jawaban
+          </button>
+        </div>
+
+        <!-- Area Feedback Misi 1 -->
+        <div id="m1-feedback" class="feedback-box"></div>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         LAYAR 2: MISI 2 — SIAPA MEMAKAN SIAPA? (KUIS 5 SOAL)
+         ====================================================================== -->
+    <section id="screen-m2" class="screen">
+      <div class="card-board">
+        <div class="mission-header">
+          <span class="mission-chip">MISI 2 DARI 3</span>
+          <h2 class="mission-title">🔍 Siapa Memakan Siapa?</h2>
+          <p class="mission-desc">
+            Jawab 5 pertanyaan berikut untuk menguji pengetahuanmu tentang peran makhluk hidup dalam rantai makanan!
+          </p>
+        </div>
+
+        <div id="m2-quiz-area">
+          <div class="quiz-top-meta">
+            <span id="m2-progress-label">Soal 1 dari 5</span>
+            <span id="m2-mini-score">Skor Misi 2: 0 Poin</span>
+          </div>
+
+          <div class="question-box">
+            <div id="m2-question-text" class="question-text">Memuat soal...</div>
+          </div>
+
+          <div id="m2-options" class="options-grid"></div>
+
+          <div id="m2-feedback" class="feedback-box"></div>
+
+          <div class="action-row" style="margin-top: 18px;">
+            <button type="button" id="m2-next-btn" class="btn-3d btn-orange" style="display: none;" onclick="nextM2Question()">
+              Soal Berikutnya ➡️
+            </button>
+          </div>
+        </div>
+
+        <!-- Ringkasan Setelah Selesai Misi 2 -->
+        <div id="m2-summary" class="mission-summary-card" style="display: none;"></div>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         LAYAR 3: MISI 3 — SELAMATKAN EKOSISTEM (3 TANTANGAN SITUASI)
+         ====================================================================== -->
+    <section id="screen-m3" class="screen">
+      <div class="card-board">
+        <div class="mission-header">
+          <span class="mission-chip">MISI 3 DARI 3</span>
+          <h2 class="mission-title">🌍 Selamatkan Ekosistem!</h2>
+          <p class="mission-desc">
+            Perhatikan 3 peristiwa alam di bawah ini dan tentukan dampaknya terhadap keseimbangan rantai makanan!
+          </p>
+        </div>
+
+        <div id="m3-challenge-area">
+          <div class="quiz-top-meta">
+            <span id="m3-progress-label">Tantangan 1 dari 3</span>
+            <span id="m3-mini-score">Skor Misi 3: 0 Poin</span>
+          </div>
+
+          <div class="question-box">
+            <div class="case-illustration">
+              <div id="m3-case-emoji" class="case-emoji-badge">🐸</div>
+              <div>
+                <div style="font-size: 0.82rem; font-weight: 800; color: var(--wood-main);">SITUASI ALAM:</div>
+                <div id="m3-case-title" style="font-weight: 900; color: var(--wood-dark); font-size: 1.05rem;">Judul Situasi</div>
+              </div>
+            </div>
+            <div id="m3-question-text" class="question-text">Memuat tantangan...</div>
+          </div>
+
+          <div id="m3-options" class="options-grid"></div>
+
+          <div id="m3-feedback" class="feedback-box"></div>
+
+          <div class="action-row" style="margin-top: 18px;">
+            <button type="button" id="m3-next-btn" class="btn-3d btn-orange" style="display: none;" onclick="nextM3Challenge()">
+              Tantangan Berikutnya ➡️
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         LAYAR 4: HALAMAN HASIL AKHIR
+         ====================================================================== -->
+    <section id="screen-final" class="screen">
+      <div class="card-board final-card">
+        <span class="badge-tag">🎉 PETUALANGAN SELESAI!</span>
+        <h2 id="final-congrats-title" class="game-title" style="margin-top: 6px;">Hebat, Penjelajah!</h2>
+        <p style="font-size: 1.08rem; color: var(--sage-dark); font-weight: 800;">
+          Kamu berhasil menyelesaikan seluruh misi dan meraih penghargaan:
+        </p>
+
+        <!-- Badge Emas SVG Penjelajah Ekosistem -->
+        <div class="badge-showcase">
+          <svg viewBox="0 0 200 200" width="100%" height="100%" role="img" aria-label="Badge Emas Penjelajah Ekosistem">
+            <!-- Pita Bawah -->
+            <polygon points="65,140 48,192 74,178 88,195 96,145" fill="#EA580C" stroke="#5C3A21" stroke-width="3" />
+            <polygon points="135,140 152,192 126,178 112,195 104,145" fill="#F97316" stroke="#5C3A21" stroke-width="3" />
+            <!-- Lingkaran Medali Emas -->
+            <circle cx="100" cy="92" r="66" fill="#FACC15" stroke="#5C3A21" stroke-width="5" />
+            <circle cx="100" cy="92" r="54" fill="#FEF08A" stroke="#D97706" stroke-width="3" stroke-dasharray="6 4" />
+            <!-- Daun & Bumi Mini di Tengah -->
+            <circle cx="100" cy="84" r="26" fill="#4ADE80" stroke="#166534" stroke-width="3" />
+            <path d="M84,82 Q96,70 105,84 T118,80" fill="none" stroke="#166534" stroke-width="3" stroke-linecap="round" />
+            <path d="M88,96 Q100,88 112,96" fill="none" stroke="#166534" stroke-width="3" stroke-linecap="round" />
+            <!-- Bintang Atas -->
+            <polygon points="100,14 106,27 120,29 110,39 112,52 100,45 88,52 90,39 80,29 94,27" fill="#F97316" stroke="#5C3A21" stroke-width="2.5" />
+            <!-- Pita Nama Badge -->
+            <rect x="26" y="116" width="148" height="28" rx="14" fill="#4F7048" stroke="#5C3A21" stroke-width="3" />
+            <text x="100" y="134" text-anchor="middle" fill="#FFFFFF" font-size="11.5" font-weight="900">PENJELAJAH EKOSISTEM</text>
+          </svg>
+        </div>
+
+        <div class="final-stats-grid">
+          <div class="stat-pill">
+            <div id="final-total-score" class="stat-value">0</div>
+            <div class="stat-label">🏆 Total Skor</div>
+          </div>
+          <div class="stat-pill">
+            <div id="final-correct-count" class="stat-value" style="color: var(--green-ok);">0 / 9</div>
+            <div class="stat-label">✅ Jawaban Benar</div>
+          </div>
+          <div class="stat-pill">
+            <div id="final-stars-count" class="stat-value" style="color: var(--yellow-deep);">⭐⭐⭐</div>
+            <div class="stat-label">🏅 Misi Tuntas</div>
+          </div>
+        </div>
+
+        <div id="final-motivation" class="motivation-banner">
+          Luar biasa! Kamu sudah paham bagaimana makhluk hidup saling bergantung dalam rantai makanan. Terus jaga alam sekitar kita, ya!
+        </div>
+
+        <div class="action-row">
+          <button type="button" class="btn-3d btn-sage" onclick="openRecapModal()">
+            📋 Lihat Hasil
+          </button>
+          <button type="button" class="btn-3d btn-orange" onclick="restartFullGame()">
+            🔄 Main Lagi
+          </button>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- ========================================================================
+       MODAL RINCIAN HASIL PER MISI
+       ======================================================================== -->
+  <div id="recap-modal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="recap-title">
+    <div class="modal-box">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+        <h3 id="recap-title" style="color: var(--wood-dark); font-size: 1.35rem;">📊 Rincian Hasil Petualangan</h3>
+        <button type="button" class="btn-3d btn-cream" style="padding: 6px 14px; font-size: 0.9rem;" onclick="closeRecapModal()">✖ Tutup</button>
+      </div>
+      <div id="recap-content"></div>
+      <div style="text-align: center; margin-top: 16px;">
+        <button type="button" class="btn-3d btn-orange" onclick="closeRecapModal()">Oke, Mengerti!</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* ==========================================================================
+       1. EFEK SUARA CERIA MENGGUNAKAN WEB AUDIO API (TANPA FILE EKSTERNAL)
+       ========================================================================== */
+    let soundEnabled = true;
+    let audioCtx = null;
+
+    function getAudioContext() {
+      if (!audioCtx) {
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        if (AudioContextClass) {
+          audioCtx = new AudioContextClass();
+        }
+      }
+      if (audioCtx && audioCtx.state === "suspended") {
+        audioCtx.resume();
+      }
+      return audioCtx;
+    }
+
+    function playTone(freq, duration, type = "sine", delay = 0, gainVal = 0.14) {
+      if (!soundEnabled) return;
+      const ctx = getAudioContext();
+      if (!ctx) return;
+
+      const now = ctx.currentTime + delay;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = type;
+      osc.frequency.setValueAtTime(freq, now);
+
+      gain.gain.setValueAtTime(gainVal, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(now);
+      osc.stop(now + duration);
+    }
+
+    function playSoundEffect(kind) {
+      if (!soundEnabled) return;
+      if (kind === "click") {
+        playTone(520, 0.08, "triangle", 0, 0.1);
+      } else if (kind === "place") {
+        playTone(620, 0.11, "sine", 0, 0.12);
+      } else if (kind === "correct") {
+        playTone(523.25, 0.14, "triangle", 0, 0.15);
+        playTone(659.25, 0.14, "triangle", 0.1, 0.15);
+        playTone(783.99, 0.25, "triangle", 0.2, 0.16);
+      } else if (kind === "wrong") {
+        playTone(300, 0.18, "sawtooth", 0, 0.08);
+        playTone(240, 0.24, "sawtooth", 0.14, 0.08);
+      } else if (kind === "victory") {
+        const notes = [523.25, 659.25, 783.99, 1046.5];
+        notes.forEach((n, idx) => playTone(n, 0.24, "triangle", idx * 0.12, 0.16));
+      }
+    }
+
+    function toggleSound() {
+      soundEnabled = !soundEnabled;
+      document.getElementById("sound-toggle-btn").textContent = soundEnabled ? "🔊" : "🔇";
+      if (soundEnabled) playSoundEffect("click");
+    }
+
+    /* ==========================================================================
+       2. DATA MATERI PEMBELAJARAN IPAS KELAS IV SD (RANTAI MAKANAN)
+       ========================================================================== */
+    const M1_ORGANISMS = [
+      { id: "rumput", name: "Rumput", emoji: "🌱", order: 0, role: "Produsen (membuat makanan sendiri lewat fotosintesis)" },
+      { id: "belalang", name: "Belalang", emoji: "🦗", order: 1, role: "Konsumen Tingkat I (herbivora pemakan tumbuhan)" },
+      { id: "katak", name: "Katak", emoji: "🐸", order: 2, role: "Konsumen Tingkat II (pemakan belalang)" },
+      { id: "ular", name: "Ular", emoji: "🐍", order: 3, role: "Konsumen Tingkat III (pemakan katak)" },
+      { id: "elang", name: "Elang", emoji: "🦅", order: 4, role: "Konsumen Puncak (tidak dimangsa hewan lain)" }
+    ];
+
+    const M2_QUESTIONS = [
+      {
+        question: "Apa yang dimaksud dengan rantai makanan dalam suatu ekosistem?",
+        options: [
+          "Perjalanan makan dan dimakan antarmakhluk hidup dengan urutan tertentu",
+          "Kumpulan hewan yang tinggal di dalam satu kandang yang sama",
+          "Proses tumbuhan menyerap air hujan dari dalam tanah",
+          "Perpindahan tempat tinggal hewan saat musim kemarau tiba"
+        ],
+        correctIndex: 0,
+        explanation: "Tepat sekali! Rantai makanan adalah peristiwa makan dan dimakan antarmakhluk hidup dengan urutan tertentu untuk mengalirkan energi."
+      },
+      {
+        question: "Mengapa tumbuhan hijau disebut sebagai produsen dalam rantai makanan?",
+        options: [
+          "Karena tumbuhan selalu dimakan oleh semua hewan buas",
+          "Karena tumbuhan dapat membuat makanannya sendiri melalui fotosintesis",
+          "Karena tumbuhan bergerak mencari mangsa di malam hari",
+          "Karena tumbuhan menguraikan sisa-sisa bangkai hewan"
+        ],
+        correctIndex: 1,
+        explanation: "Hebat! Tumbuhan hijau mampu membuat makanannya sendiri dengan bantuan cahaya matahari (fotosintesis), sehingga disebut produsen."
+      },
+      {
+        question: "Pada rantai makanan: Padi → Tikus → Ular → Elang. Hewan manakah yang berperan sebagai Konsumen Tingkat II?",
+        options: [
+          "Padi",
+          "Tikus",
+          "Ular",
+          "Elang"
+        ],
+        correctIndex: 2,
+        explanation: "Benar! Padi adalah produsen, Tikus adalah Konsumen Tingkat I (pemakan tumbuhan), dan Ular adalah Konsumen Tingkat II karena memakan Tikus."
+      },
+      {
+        question: "Jamur dan bakteri tanah menguraikan sisa makhluk hidup yang telah mati menjadi zat hara yang menyuburkan tanah. Peran mereka disebut...",
+        options: [
+          "Produsen utama",
+          "Konsumen puncak",
+          "Pengurai (dekomposer)",
+          "Pemangsa pertama"
+        ],
+        correctIndex: 2,
+        explanation: "Bagus sekali! Jamur dan bakteri berperan sebagai pengurai (dekomposer) yang mengembalikan nutrisi ke tanah untuk tumbuhan."
+      },
+      {
+        question: "Dalam hubungan makan dan dimakan di ekosistem hutan, ke manakah arah aliran energi berpindah?",
+        options: [
+          "Dari konsumen puncak menuju ke tumbuhan hijau",
+          "Dari produsen ke konsumen tingkat I, lalu ke konsumen berikutnya",
+          "Hanya berputar di antara hewan karnivora saja",
+          "Dari pengurai langsung menuju ke sinar matahari"
+        ],
+        correctIndex: 1,
+        explanation: "Sempurna! Energi mengalir dari matahari ke produsen (tumbuhan), lalu berpindah ke konsumen I, II, III, hingga akhirnya ke pengurai."
+      }
+    ];
+
+    const M3_CHALLENGES = [
+      {
+        emoji: "🐸",
+        title: "Populasi Katak di Sawah Berkurang Drastis",
+        question: "Akibat perburuan liar, jumlah katak di sawah menurun tajam. Apa dampak langsung yang terjadi pada rantai makanan sawah?",
+        options: [
+          "Populasi belalang meningkat pesat dan merusak tanaman padi",
+          "Populasi ular bertambah banyak karena makanannya melimpah",
+          "Tanaman padi tumbuh semakin subur tanpa gangguan hama",
+          "Elang berubah memakan rumput dan biji-bijian di sawah"
+        ],
+        correctIndex: 0,
+        explanation: "Tepat! Karena pemangsa alaminya (katak) berkurang, jumlah belalang akan melonjak dan memakan banyak tanaman padi milik petani."
+      },
+      {
+        emoji: "🦗",
+        title: "Ledakan Populasi Belalang di Ladang",
+        question: "Jika populasi belalang meningkat terlalu banyak dalam waktu singkat, apa akibat yang paling mungkin terjadi pada ekosistem tersebut?",
+        options: [
+          "Tumbuhan hijau akan cepat habis dimakan belalang",
+          "Jumlah rumput bertambah dua kali lipat lebih cepat",
+          "Katak akan punah karena kelebihan makanan",
+          "Tidak ada perubahan apa pun pada ekosistem ladang"
+        ],
+        correctIndex: 0,
+        explanation: "Benar sekali! Belalang adalah pemakan tumbuhan. Jika jumlahnya terlalu banyak, tumbuhan sebagai produsen akan cepat habis."
+      },
+      {
+        emoji: "🌾",
+        title: "Tumbuhan sebagai Produsen Hilang karena Kekeringan",
+        question: "Apa yang akan terjadi jika seluruh tumbuhan hijau di suatu ekosistem mati dan habis?",
+        options: [
+          "Hewan pemakan tumbuhan tetap hidup sehat seperti biasa",
+          "Seluruh makhluk hidup dalam rantai makanan terancam kelaparan dan punah",
+          "Elang dan ular akan bertambah banyak populasinya",
+          "Rantai makanan menjadi lebih seimbang dan rapi"
+        ],
+        correctIndex: 1,
+        explanation: "Luar biasa! Tumbuhan adalah sumber energi utama (produsen). Jika produsen hilang, konsumen I hingga konsumen puncak akan kehilangan sumber makanan."
+      }
+    ];
+
+    /* ==========================================================================
+       3. STATE PERMAINAN GLOBAL
+       ========================================================================== */
+    const gameState = {
+      playerName: "Penjelajah",
+      totalScore: 0,
+      unlockedMission: 1,
+      currentScreen: "landing",
+      m1: {
+        slots: [null, null, null, null, null],
+        poolOrder: [],
+        selectedOrgId: null,
+        attempts: 0,
+        completed: false,
+        scoreEarned: 0
+      },
+      m2: {
+        currentIdx: 0,
+        scoreEarned: 0,
+        correctCount: 0,
+        answered: false,
+        completed: false
+      },
+      m3: {
+        currentIdx: 0,
+        scoreEarned: 0,
+        correctCount: 0,
+        answered: false,
+        completed: false
+      }
+    };
+
+    /* ==========================================================================
+       4. NAVIGASI LAYAR & PEMBARUAN HUD
+       ========================================================================== */
+    function showScreen(screenId) {
+      document.querySelectorAll(".screen").forEach((el) => el.classList.remove("active"));
+      const target = document.getElementById("screen-" + screenId);
+      if (target) target.classList.add("active");
+      gameState.currentScreen = screenId;
+
+      const hud = document.getElementById("game-hud");
+      if (screenId === "landing") {
+        hud.classList.remove("visible");
+      } else {
+        hud.classList.add("visible");
+      }
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function updateHUD() {
+      document.getElementById("hud-player-name").textContent = gameState.playerName;
+      document.getElementById("hud-score").textContent = gameState.totalScore;
+
+      // Hitung persentase progres 3 misi
+      let completedCount = 0;
+      if (gameState.m1.completed) completedCount++;
+      if (gameState.m2.completed) completedCount++;
+      if (gameState.m3.completed) completedCount++;
+
+      const pct = Math.round((completedCount / 3) * 100);
+      document.getElementById("hud-progress-fill").style.width = pct + "%";
+
+      // Perbarui status tombol navigasi misi
+      for (let m = 1; m <= 3; m++) {
+        const pill = document.getElementById("nav-m" + m);
+        const isDone = gameState["m" + m].completed;
+        const isUnlocked = m <= gameState.unlockedMission;
+        const isCurrent = gameState.currentScreen === "m" + m;
+
+        pill.className = "step-pill";
+        if (isDone) {
+          pill.classList.add("done");
+          pill.textContent = `Misi ${m} ✅`;
+        } else if (isUnlocked) {
+          if (isCurrent) pill.classList.add("active");
+          pill.textContent = `Misi ${m} ⭐`;
+        } else {
+          pill.classList.add("locked");
+          pill.textContent = `Misi ${m} 🔒`;
+        }
+      }
+    }
+
+    function addScore(points) {
+      if (points <= 0) return;
+      gameState.totalScore += points;
+      const scoreEl = document.getElementById("hud-score");
+      const boxEl = document.getElementById("hud-score-box");
+
+      scoreEl.textContent = gameState.totalScore;
+      scoreEl.classList.remove("score-jump");
+      void scoreEl.offsetWidth;
+      scoreEl.classList.add("score-jump");
+
+      const badge = document.createElement("span");
+      badge.className = "floating-plus";
+      badge.textContent = `+${points}`;
+      boxEl.appendChild(badge);
+      setTimeout(() => badge.remove(), 1100);
+    }
+
+    function navigateMission(missionNum) {
+      if (missionNum > gameState.unlockedMission) {
+        playSoundEffect("wrong");
+        return;
+      }
+      playSoundEffect("click");
+      showScreen("m" + missionNum);
+      updateHUD();
+    }
+
+    /* ==========================================================================
+       5. LOGIKA HALAMAN PEMBUKA
+       ========================================================================== */
+    function startAdventure() {
+      const input = document.getElementById("player-name-input");
+      const err = document.getElementById("name-error-msg");
+      const rawName = input.value.trim();
+
+      if (!rawName) {
+        err.textContent = "Yuk, tulis nama panggilanmu dulu supaya petualangan bisa dimulai! 😊";
+        input.focus();
+        playSoundEffect("wrong");
+        return;
+      }
+
+      err.textContent = "";
+      gameState.playerName = rawName;
+      playSoundEffect("correct");
+
+      initMission1();
+      showScreen("m1");
+      updateHUD();
+    }
+
+    document.getElementById("player-name-input").addEventListener("keydown", function (e) {
+      if (e.key === "Enter") startAdventure();
+    });
+
+    /* ==========================================================================
+       6. MISI 1 — SUSUN RANTAI MAKANAN (DRAG & DROP + TAP-TO-SELECT)
+       ========================================================================== */
+    function shuffleArray(arr) {
+      const copy = [...arr];
+      for (let i = copy.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+      // Pastikan tidak langsung terurut benar 100% saat diacak
+      const isAlreadySorted = copy.every((item, idx) => item.order === idx);
+      if (isAlreadySorted && copy.length > 1) {
+        [copy[0], copy[1]] = [copy[1], copy[0]];
+      }
+      return copy;
+    }
+
+    function initMission1() {
+      gameState.m1.slots = [null, null, null, null, null];
+      gameState.m1.poolOrder = shuffleArray(M1_ORGANISMS);
+      gameState.m1.selectedOrgId = null;
+      gameState.m1.attempts = 0;
+      gameState.m1.completed = false;
+      gameState.m1.scoreEarned = 0;
+
+      const fb = document.getElementById("m1-feedback");
+      fb.className = "feedback-box";
+      fb.innerHTML = "";
+      document.getElementById("m1-shuffle-btn").disabled = false;
+      renderMission1();
+    }
+
+    function resetM1Board(withSound = false) {
+      if (gameState.m1.completed) return;
+      if (withSound) playSoundEffect("click");
+      gameState.m1.slots = [null, null, null, null, null];
+      gameState.m1.poolOrder = shuffleArray(M1_ORGANISMS);
+      gameState.m1.selectedOrgId = null;
+      const fb = document.getElementById("m1-feedback");
+      fb.className = "feedback-box";
+      renderMission1();
+    }
+
+    function renderMission1(slotValidation = null) {
+      const slotsContainer = document.getElementById("m1-slots");
+      const poolContainer = document.getElementById("m1-pool");
+      slotsContainer.innerHTML = "";
+      poolContainer.innerHTML = "";
+
+      const slotLabels = ["1. Produsen", "2. Konsumen I", "3. Konsumen II", "4. Konsumen III", "5. Puncak"];
+
+      // Render 5 Slot Urutan
+      gameState.m1.slots.forEach((orgId, idx) => {
+        const wrap = document.createElement("div");
+        wrap.className = "chain-slot-wrap";
+
+        const slotEl = document.createElement("div");
+        slotEl.className = "drop-slot";
+        if (orgId) slotEl.classList.add("filled");
+        if (slotValidation) {
+          slotEl.classList.add(slotValidation[idx] ? "slot-correct" : "slot-wrong");
+        }
+
+        // Event Drag-and-Drop pada Slot
+        slotEl.addEventListener("dragover", (e) => {
+          e.preventDefault();
+          if (!gameState.m1.completed) slotEl.classList.add("drag-over");
+        });
+        slotEl.addEventListener("dragleave", () => {
+          slotEl.classList.remove("drag-over");
+        });
+        slotEl.addEventListener("drop", (e) => {
+          e.preventDefault();
+          slotEl.classList.remove("drag-over");
+          if (gameState.m1.completed) return;
+          const draggedId = e.dataTransfer.getData("text/plain");
+          if (draggedId) placeOrganismInSlot(draggedId, idx);
+        });
+
+        // Event Tap/Klik pada Slot
+        slotEl.addEventListener("click", () => {
+          if (gameState.m1.completed) return;
+          if (gameState.m1.selectedOrgId) {
+            placeOrganismInSlot(gameState.m1.selectedOrgId, idx);
+          } else if (orgId) {
+            // Kembalikan kartu dari slot ke area pilihan
+            gameState.m1.slots[idx] = null;
+            playSoundEffect("click");
+            clearM1Warning();
+            renderMission1();
+          }
+        });
+
+        const numTag = document.createElement("div");
+        numTag.className = "slot-number";
+        numTag.textContent = slotLabels[idx];
+        slotEl.appendChild(numTag);
+
+        if (orgId) {
+          const org = M1_ORGANISMS.find((o) => o.id === orgId);
+          const card = createOrgCardElement(org, true);
+          slotEl.appendChild(card);
+        } else {
+          const ph = document.createElement("div");
+          ph.className = "slot-placeholder";
+          ph.textContent = "Taruh di sini";
+          slotEl.appendChild(ph);
+        }
+
+        wrap.appendChild(slotEl);
+
+        if (idx < 4) {
+          const arrow = document.createElement("span");
+          arrow.className = "chain-arrow";
+          arrow.textContent = "➔";
+          wrap.appendChild(arrow);
+        }
+
+        slotsContainer.appendChild(wrap);
+      });
+
+      // Render Kartu di Area Pilihan (yang belum masuk slot)
+      const placedIds = new Set(gameState.m1.slots.filter(Boolean));
+      gameState.m1.poolOrder.forEach((org) => {
+        if (!placedIds.has(org.id)) {
+          const card = createOrgCardElement(org, false);
+          poolContainer.appendChild(card);
+        }
+      });
+
+      // Aktifkan tombol Periksa Jawaban jika kelima slot sudah terisi
+      const allFilled = gameState.m1.slots.every((s) => s !== null);
+      document.getElementById("m1-check-btn").disabled = !allFilled || gameState.m1.completed;
+    }
+
+    function createOrgCardElement(org, isInSlot) {
+      const card = document.createElement("div");
+      card.className = "org-card" + (isInSlot ? " in-slot" : "");
+      if (!isInSlot && gameState.m1.selectedOrgId === org.id) {
+        card.classList.add("selected");
+      }
+
+      card.draggable = !gameState.m1.completed;
+      card.innerHTML = `
+        <span class="org-emoji">${org.emoji}</span>
+        <div class="org-name">${org.name}</div>
+        ${isInSlot && !gameState.m1.completed ? '<div class="org-hint-role">Ketuk untuk lepas</div>' : ""}
+      `;
+
+      card.addEventListener("dragstart", (e) => {
+        if (gameState.m1.completed) {
+          e.preventDefault();
+          return;
+        }
+        e.dataTransfer.setData("text/plain", org.id);
+      });
+
+      if (!isInSlot) {
+        card.addEventListener("click", () => {
+          if (gameState.m1.completed) return;
+          // Jika kartu sudah dipilih sebelumnya lalu diketuk lagi, otomatis masukkan ke slot kosong pertama
+          if (gameState.m1.selectedOrgId === org.id) {
+            const firstEmpty = gameState.m1.slots.findIndex((s) => s === null);
+            if (firstEmpty !== -1) {
+              placeOrganismInSlot(org.id, firstEmpty);
+            }
+          } else {
+            gameState.m1.selectedOrgId = org.id;
+            playSoundEffect("click");
+            renderMission1();
+          }
+        });
+      }
+
+      return card;
+    }
+
+    function placeOrganismInSlot(orgId, slotIdx) {
+      // Hapus orgId jika sebelumnya berada di slot lain
+      const existingIdx = gameState.m1.slots.indexOf(orgId);
+      if (existingIdx !== -1) {
+        gameState.m1.slots[existingIdx] = null;
+      }
+      gameState.m1.slots[slotIdx] = orgId;
+      gameState.m1.selectedOrgId = null;
+      playSoundEffect("place");
+      clearM1Warning();
+      renderMission1();
+    }
+
+    function clearM1Warning() {
+      const fb = document.getElementById("m1-feedback");
+      if (fb.classList.contains("warning")) {
+        fb.className = "feedback-box";
+      }
+    }
+
+    function checkMission1() {
+      if (gameState.m1.completed) return;
+      gameState.m1.attempts++;
+
+      const validation = gameState.m1.slots.map((orgId, idx) => {
+        const org = M1_ORGANISMS.find((o) => o.id === orgId);
+        return org && org.order === idx;
+      });
+
+      const isAllCorrect = validation.every(Boolean);
+      const fb = document.getElementById("m1-feedback");
+
+      if (isAllCorrect) {
+        gameState.m1.completed = true;
+        // Skor 100 jika percobaan pertama, berkurang 10 tiap salah sebelumnya (minimal 60)
+        const earned = Math.max(60, 100 - (gameState.m1.attempts - 1) * 10);
+        gameState.m1.scoreEarned = earned;
+        addScore(earned);
+        gameState.unlockedMission = Math.max(gameState.unlockedMission, 2);
+
+        playSoundEffect("correct");
+        document.getElementById("m1-shuffle-btn").disabled = true;
+        renderMission1(validation);
+        updateHUD();
+
+        fb.className = "feedback-box success visible";
+        fb.innerHTML = `
+          <div class="feedback-title">🎉 Luar Biasa, ${escapeHTML(gameState.playerName)}! Urutan Rantai Makananmu Benar! (+${earned} Poin)</div>
+          <div class="feedback-text">
+            Kamu berhasil menyusun aliran energi di ekosistem sawah dari produsen hingga konsumen puncak:
+          </div>
+          <div class="role-summary-list">
+            ${M1_ORGANISMS.map((o) => `<div class="role-item"><strong>${o.emoji} ${o.name}:</strong> ${o.role}</div>`).join("")}
+          </div>
+          <div class="action-row" style="margin-top: 16px;">
+            <button type="button" class="btn-3d btn-orange" onclick="goToMission2()">
+              Lanjut ke Misi 2 ➡️
+            </button>
+          </div>
+        `;
+      } else {
+        playSoundEffect("wrong");
+        renderMission1(validation);
+        const correctCount = validation.filter(Boolean).length;
+
+        fb.className = "feedback-box warning visible";
+        fb.innerHTML = `
+          <div class="feedback-title">🤔 Hampir Tepat! Yuk Coba Susun Lagi!</div>
+          <div class="feedback-text">
+            Sudah ada <strong>${correctCount} dari 5 posisi</strong> yang tepat (ditandai bingkai hijau). Perhatikan kotak yang berwarna merah muda: ingatlah bahwa rantai makanan selalu dimulai dari <strong>tumbuhan hijau (produsen)</strong> yang membuat makanan sendiri, lalu dimakan hewan pemakan tumbuhan, dan seterusnya!
+          </div>
+        `;
+      }
+    }
+
+    function goToMission2() {
+      playSoundEffect("click");
+      if (gameState.m2.currentIdx === 0 && !gameState.m2.completed) {
+        renderM2Question();
+      }
+      showScreen("m2");
+      updateHUD();
+    }
+
+    /* ==========================================================================
+       7. MISI 2 — SIAPA MEMAKAN SIAPA? (KUIS 5 SOAL PILIHAN GANDA)
+       ========================================================================== */
+    function renderM2Question() {
+      const idx = gameState.m2.currentIdx;
+      const qData = M2_QUESTIONS[idx];
+      gameState.m2.answered = false;
+
+      document.getElementById("m2-quiz-area").style.display = "block";
+      document.getElementById("m2-summary").style.display = "none";
+      document.getElementById("m2-progress-label").textContent = `Soal ${idx + 1} dari ${M2_QUESTIONS.length}`;
+      document.getElementById("m2-mini-score").textContent = `Skor Misi 2: ${gameState.m2.scoreEarned} Poin`;
+      document.getElementById("m2-question-text").textContent = qData.question;
+
+      const fb = document.getElementById("m2-feedback");
+      fb.className = "feedback-box";
+      fb.innerHTML = "";
+      document.getElementById("m2-next-btn").style.display = "none";
+
+      const optionsEl = document.getElementById("m2-options");
+      optionsEl.innerHTML = "";
+      const letters = ["A", "B", "C", "D"];
+
+      qData.options.forEach((optText, optIdx) => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "option-btn";
+        btn.innerHTML = `
+          <span class="option-letter">${letters[optIdx]}</span>
+          <span>${optText}</span>
+        `;
+        btn.addEventListener("click", () => handleM2Answer(optIdx));
+        optionsEl.appendChild(btn);
+      });
+    }
+
+    function handleM2Answer(selectedIdx) {
+      if (gameState.m2.answered) return;
+      gameState.m2.answered = true;
+
+      const idx = gameState.m2.currentIdx;
+      const qData = M2_QUESTIONS[idx];
+      const isCorrect = selectedIdx === qData.correctIndex;
+      const buttons = document.querySelectorAll("#m2-options .option-btn");
+
+      buttons.forEach((btn, bIdx) => {
+        btn.disabled = true;
+        if (bIdx === qData.correctIndex) {
+          btn.classList.add("opt-correct");
+        } else if (bIdx === selectedIdx && !isCorrect) {
+          btn.classList.add("opt-wrong");
+        }
+      });
+
+      const fb = document.getElementById("m2-feedback");
+      if (isCorrect) {
+        gameState.m2.scoreEarned += 20;
+        gameState.m2.correctCount++;
+        addScore(20);
+        playSoundEffect("correct");
+        document.getElementById("m2-mini-score").textContent = `Skor Misi 2: ${gameState.m2.scoreEarned} Poin`;
+
+        fb.className = "feedback-box success visible";
+        fb.innerHTML = `
+          <div class="feedback-title">🌟 Jawabanmu Benar! (+20 Poin)</div>
+          <div class="feedback-text">${qData.explanation}</div>
+        `;
+      } else {
+        playSoundEffect("wrong");
+        fb.className = "feedback-box warning visible";
+        fb.innerHTML = `
+          <div class="feedback-title">💡 Belum Tepat, Tetap Semangat!</div>
+          <div class="feedback-text">${qData.explanation}</div>
+        `;
+      }
+
+      const nextBtn = document.getElementById("m2-next-btn");
+      nextBtn.style.display = "inline-flex";
+      nextBtn.textContent = idx < M2_QUESTIONS.length - 1 ? "Soal Berikutnya ➡️" : "Lihat Nilai Misi 2 🏅";
+    }
+
+    function nextM2Question() {
+      playSoundEffect("click");
+      if (gameState.m2.currentIdx < M2_QUESTIONS.length - 1) {
+        gameState.m2.currentIdx++;
+        renderM2Question();
+      } else {
+        finishMission2();
+      }
+    }
+
+    function finishMission2() {
+      gameState.m2.completed = true;
+      gameState.unlockedMission = Math.max(gameState.unlockedMission, 3);
+      updateHUD();
+      playSoundEffect("correct");
+
+      document.getElementById("m2-quiz-area").style.display = "none";
+      const sumEl = document.getElementById("m2-summary");
+      sumEl.style.display = "block";
+      sumEl.innerHTML = `
+        <div style="font-size: 2.8rem; margin-bottom: 6px;">🏅</div>
+        <h3 style="font-size: 1.45rem; color: var(--wood-dark); margin-bottom: 8px;">
+          Misi 2 Tuntas, ${escapeHTML(gameState.playerName)}!
+        </h3>
+        <p style="font-size: 1.05rem; margin-bottom: 14px;">
+          Kamu menjawab benar <strong>${gameState.m2.correctCount} dari ${M2_QUESTIONS.length} soal</strong> dan memperoleh <strong>${gameState.m2.scoreEarned} Poin</strong>!
+        </p>
+        <button type="button" class="btn-3d btn-orange" onclick="goToMission3()">
+          Lanjut ke Misi 3 ➡️
+        </button>
+      `;
+    }
+
+    function goToMission3() {
+      playSoundEffect("click");
+      if (gameState.m3.currentIdx === 0 && !gameState.m3.completed) {
+        renderM3Challenge();
+      }
+      showScreen("m3");
+      updateHUD();
+    }
+
+    /* ==========================================================================
+       8. MISI 3 — SELAMATKAN EKOSISTEM (3 TANTANGAN SITUASI)
+       ========================================================================== */
+    function renderM3Challenge() {
+      const idx = gameState.m3.currentIdx;
+      const cData = M3_CHALLENGES[idx];
+      gameState.m3.answered = false;
+
+      document.getElementById("m3-progress-label").textContent = `Tantangan ${idx + 1} dari ${M3_CHALLENGES.length}`;
+      document.getElementById("m3-mini-score").textContent = `Skor Misi 3: ${gameState.m3.scoreEarned} Poin`;
+      document.getElementById("m3-case-emoji").textContent = cData.emoji;
+      document.getElementById("m3-case-title").textContent = cData.title;
+      document.getElementById("m3-question-text").textContent = cData.question;
+
+      const fb = document.getElementById("m3-feedback");
+      fb.className = "feedback-box";
+      fb.innerHTML = "";
+      document.getElementById("m3-next-btn").style.display = "none";
+
+      const optionsEl = document.getElementById("m3-options");
+      optionsEl.innerHTML = "";
+      const letters = ["A", "B", "C", "D"];
+
+      cData.options.forEach((optText, optIdx) => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "option-btn";
+        btn.innerHTML = `
+          <span class="option-letter">${letters[optIdx]}</span>
+          <span>${optText}</span>
+        `;
+        btn.addEventListener("click", () => handleM3Answer(optIdx));
+        optionsEl.appendChild(btn);
+      });
+    }
+
+    function handleM3Answer(selectedIdx) {
+      if (gameState.m3.answered) return;
+      gameState.m3.answered = true;
+
+      const idx = gameState.m3.currentIdx;
+      const cData = M3_CHALLENGES[idx];
+      const isCorrect = selectedIdx === cData.correctIndex;
+      const buttons = document.querySelectorAll("#m3-options .option-btn");
+
+      buttons.forEach((btn, bIdx) => {
+        btn.disabled = true;
+        if (bIdx === cData.correctIndex) {
+          btn.classList.add("opt-correct");
+        } else if (bIdx === selectedIdx && !isCorrect) {
+          btn.classList.add("opt-wrong");
+        }
+      });
+
+      const fb = document.getElementById("m3-feedback");
+      if (isCorrect) {
+        gameState.m3.scoreEarned += 30;
+        gameState.m3.correctCount++;
+        addScore(30);
+        playSoundEffect("correct");
+        document.getElementById("m3-mini-score").textContent = `Skor Misi 3: ${gameState.m3.scoreEarned} Poin`;
+
+        fb.className = "feedback-box success visible";
+        fb.innerHTML = `
+          <div class="feedback-title">🌿 Analisis Penyelamat yang Tepat! (+30 Poin)</div>
+          <div class="feedback-text">${cData.explanation}</div>
+        `;
+      } else {
+        playSoundEffect("wrong");
+        fb.className = "feedback-box warning visible";
+        fb.innerHTML = `
+          <div class="feedback-title">🧭 Yuk Pelajari Dampak Ekosistemnya!</div>
+          <div class="feedback-text">${cData.explanation}</div>
+        `;
+      }
+
+      const nextBtn = document.getElementById("m3-next-btn");
+      nextBtn.style.display = "inline-flex";
+      nextBtn.textContent = idx < M3_CHALLENGES.length - 1 ? "Tantangan Berikutnya ➡️" : "Selesaikan Petualangan 🏆";
+    }
+
+    function nextM3Challenge() {
+      playSoundEffect("click");
+      if (gameState.m3.currentIdx < M3_CHALLENGES.length - 1) {
+        gameState.m3.currentIdx++;
+        renderM3Challenge();
+      } else {
+        finishAllMissions();
+      }
+    }
+
+    /* ==========================================================================
+       9. HALAMAN HASIL AKHIR, CONFETTI & MODAL RINCIAN
+       ========================================================================== */
+    function finishAllMissions() {
+      gameState.m3.completed = true;
+      updateHUD();
+      playSoundEffect("victory");
+
+      const totalCorrect = (gameState.m1.completed ? 1 : 0) + gameState.m2.correctCount + gameState.m3.correctCount;
+      const maxTasks = 1 + M2_QUESTIONS.length + M3_CHALLENGES.length; // 1 + 5 + 3 = 9
+
+      document.getElementById("final-congrats-title").textContent = `Hebat, ${gameState.playerName}!`;
+      document.getElementById("final-total-score").textContent = gameState.totalScore;
+      document.getElementById("final-correct-count").textContent = `${totalCorrect} / ${maxTasks}`;
+
+      const motEl = document.getElementById("final-motivation");
+      if (gameState.totalScore >= 240) {
+        motEl.textContent = `🌟 Nilai Sempurna! ${gameState.playerName}, kamu benar-benar ahli rantai makanan dan pahlawan penjaga keseimbangan alam!`;
+      } else if (gameState.totalScore >= 170) {
+        motEl.textContent = `👏 Kerja Bagus, ${gameState.playerName}! Kamu sudah memahami peran produsen, konsumen, dan keseimbangan ekosistem dengan sangat baik!`;
+      } else {
+        motEl.textContent = `💪 Tetap Semangat Belajar, ${gameState.playerName}! Setiap penjelajah hebat selalu berlatih. Kamu bisa klik "Main Lagi" untuk meraih skor lebih tinggi!`;
+      }
+
+      showScreen("final");
+      launchConfetti();
+    }
+
+    function openRecapModal() {
+      playSoundEffect("click");
+      const content = document.getElementById("recap-content");
+      content.innerHTML = `
+        <p style="margin-bottom: 12px; color: var(--text-muted); font-weight: 700;">
+          Nama Penjelajah: <strong style="color: var(--wood-dark);">${escapeHTML(gameState.playerName)}</strong>
+        </p>
+        <div class="recap-row">
+          <div>
+            <strong>🌾 Misi 1: Susun Rantai Makanan</strong>
+            <div style="font-size: 0.85rem; color: var(--text-muted);">Selesai dalam ${gameState.m1.attempts}x percobaan</div>
+          </div>
+          <span style="font-weight: 900; color: var(--green-ok);">+${gameState.m1.scoreEarned} Poin</span>
+        </div>
+        <div class="recap-row">
+          <div>
+            <strong>🔍 Misi 2: Siapa Memakan Siapa?</strong>
+            <div style="font-size: 0.85rem; color: var(--text-muted);">Benar ${gameState.m2.correctCount} dari ${M2_QUESTIONS.length} soal</div>
+          </div>
+          <span style="font-weight: 900; color: var(--green-ok);">+${gameState.m2.scoreEarned} Poin</span>
+        </div>
+        <div class="recap-row">
+          <div>
+            <strong>🌍 Misi 3: Selamatkan Ekosistem</strong>
+            <div style="font-size: 0.85rem; color: var(--text-muted);">Benar ${gameState.m3.correctCount} dari ${M3_CHALLENGES.length} tantangan</div>
+          </div>
+          <span style="font-weight: 900; color: var(--green-ok);">+${gameState.m3.scoreEarned} Poin</span>
+        </div>
+        <div class="recap-row" style="background: var(--yellow-soft); border-color: var(--yellow-deep);">
+          <strong>🏆 TOTAL SKOR KESELURUHAN</strong>
+          <strong style="font-size: 1.2rem; color: var(--orange-main);">${gameState.totalScore} Poin</strong>
+        </div>
+      `;
+      document.getElementById("recap-modal").classList.add("open");
+    }
+
+    function closeRecapModal() {
+      playSoundEffect("click");
+      document.getElementById("recap-modal").classList.remove("open");
+    }
+
+    function restartFullGame() {
+      playSoundEffect("click");
+      gameState.totalScore = 0;
+      gameState.unlockedMission = 1;
+      gameState.m1 = { slots: [null, null, null, null, null], poolOrder: [], selectedOrgId: null, attempts: 0, completed: false, scoreEarned: 0 };
+      gameState.m2 = { currentIdx: 0, scoreEarned: 0, correctCount: 0, answered: false, completed: false };
+      gameState.m3 = { currentIdx: 0, scoreEarned: 0, correctCount: 0, answered: false, completed: false };
+
+      stopConfetti();
+      showScreen("landing");
+      updateHUD();
+    }
+
+    /* ==========================================================================
+       10. ANIMASI CONFETTI WARNA-WARNI
+       ========================================================================== */
+    let confettiAnimId = null;
+    let confettiPieces = [];
+
+    function launchConfetti() {
+      const canvas = document.getElementById("confetti-canvas");
+      const ctx = canvas.getContext("2d");
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+
+      const colors = ["#F97316", "#FACC15", "#4ADE80", "#38BDF8", "#FB7185", "#A3B899"];
+      confettiPieces = Array.from({ length: 110 }, () => ({
+        x: Math.random() * canvas.width,
+        y: Math.random() * -canvas.height,
+        w: 8 + Math.random() * 8,
+        h: 6 + Math.random() * 6,
+        color: colors[Math.floor(Math.random() * colors.length)],
+        speedY: 2.2 + Math.random() * 3.2,
+        speedX: -1.5 + Math.random() * 3,
+        rot: Math.random() * 360,
+        rotSpeed: -4 + Math.random() * 8
+      }));
+
+      let frames = 0;
+      function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        confettiPieces.forEach((p) => {
+          p.y += p.speedY;
+          p.x += p.speedX;
+          p.rot += p.rotSpeed;
+          if (p.y > canvas.height && frames < 220) {
+            p.y = -15;
+            p.x = Math.random() * canvas.width;
+          }
+          ctx.save();
+          ctx.translate(p.x, p.y);
+          ctx.rotate((p.rot * Math.PI) / 180);
+          ctx.fillStyle = p.color;
+          ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+          ctx.restore();
+        });
+        frames++;
+        if (frames < 340) {
+          confettiAnimId = requestAnimationFrame(draw);
+        } else {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+      }
+      if (confettiAnimId) cancelAnimationFrame(confettiAnimId);
+      draw();
+    }
+
+    function stopConfetti() {
+      if (confettiAnimId) cancelAnimationFrame(confettiAnimId);
+      const canvas = document.getElementById("confetti-canvas");
+      const ctx = canvas.getContext("2d");
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+
+    function escapeHTML(str) {
+      return str.replace(/[&<>"']/g, (m) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[m]));
+    }
+  </script>
+</body>
+</html>
